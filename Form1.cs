@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using _492989_Daniel_Anantadhirya_A.L._ResponsiJuniorProject.Utils;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,9 +26,18 @@ namespace _492989_Daniel_Anantadhirya_A.L._ResponsiJuniorProject
         private string sql { get; set; } = null;
         private DataGridViewRow r { get; set; }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void ConnectDatabase()
         {
             conn = new NpgsqlConnection(connstring);
+        }
+        private void ConnectDatabase(string connection_string)
+        {
+            conn = new NpgsqlConnection(connection_string);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ConnectDatabase();
             btnLoad.PerformClick();
         }
 
@@ -53,26 +63,14 @@ namespace _492989_Daniel_Anantadhirya_A.L._ResponsiJuniorProject
 
         private int getDepartmentId(string department)
         {
-            switch (department)
-            {
-                case "HR": return 1;
-                case "Engineer": return 2;
-                case "Developer": return 3;
-                case "Product M": return 4;
-                case "Finance": return 5;
-                default: return -1;
-            }
+            DepartmentMapper mapper = new DepartmentMapper();
+            return mapper.getId(department);
         }
 
         private int getJabatanId(string jabatan)
         {
-            switch (jabatan)
-            {
-                case "Intern": return 1;
-                case "Junior": return 2;
-                case "Senior": return 3;
-                default: return -1;
-            }
+            JabatanMapper mapper = new JabatanMapper();
+            return mapper.getId(jabatan);
         }
 
         private void btnInsert_Click(object sender, EventArgs e)
@@ -181,7 +179,7 @@ namespace _492989_Daniel_Anantadhirya_A.L._ResponsiJuniorProject
                     conn.Open();
                     sql = @"select * from delete_karyawan(:_id)";
                     cmd = new NpgsqlCommand(sql, conn);
-                    cmd.Parameters.AddWithValue("_id", r.Cells["_id"].Value.ToString());
+                    cmd.Parameters.AddWithValue("_id", r.Cells["_id"].Value);
                     if ((int)cmd.ExecuteScalar() == 1)
                     {
                         MessageBox.Show("Data Users Berhasil dihapus", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
